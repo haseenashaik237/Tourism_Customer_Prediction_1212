@@ -1,0 +1,58 @@
+name: Tourist Customer Prediction MLS pipeline
+
+on:
+  push:
+    branches:
+      - main        # auto-trigger on push to main
+  workflow_dispatch:  # allow manual run from GitHub UI
+
+jobs:
+  data_prep:
+    runs-on: ubuntu-latest
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r tourist_customer_prediction_1212/requirements.txt
+
+      - name: Run Data Preparation (split + upload X/y to HF)
+        run: |
+          python tourist_customer_prediction_1212/model_building/data_prep.py
+
+  model_training:
+    needs: data_prep
+    runs-on: ubuntu-latest
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r tourist_customer_prediction_1212/requirements.txt
+
+      - name: Train XGBoost Model and Upload to HF Model Hub
+        run: |
+          python tourist_customer_prediction_1212/model_building/train.py
+
+  deploy_hosting:
+    needs: model_training
+    runs-on: ubuntu-latest
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r tourist_customer_prediction_1212/requirements.txt
+
+      - name: Push Streamlit App to Hugging Face Space
+        run: |
+          python tourist_customer_prediction_1212/hosting/hosting.py
