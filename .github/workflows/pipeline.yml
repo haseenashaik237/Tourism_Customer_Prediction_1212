@@ -3,8 +3,8 @@ name: Tourist Customer Prediction MLS pipeline
 on:
   push:
     branches:
-      - main        # auto-trigger on push to main
-  workflow_dispatch:  # allow manual run from GitHub UI
+      - main
+  workflow_dispatch:
 
 jobs:
   register-dataset:
@@ -36,7 +36,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Data Preparation (split + upload X/y to HF)
+      - name: Run Data Preparation
         run: |
           python model_building/data_prep.py
 
@@ -53,7 +53,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Train XGBoost Model and Upload to HF Model Hub
+      - name: Train Model
         run: |
           python model_building/train.py
 
@@ -70,7 +70,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Push Streamlit App to Hugging Face Space
+      - name: Push Hosting App
         run: |
           python hosting/hosting.py
+
 
