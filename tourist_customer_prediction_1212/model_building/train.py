@@ -15,7 +15,7 @@ import mlflow
 
 # 👇 In Colab you set public_url earlier when starting mlflow+ngrok
 # For CI, you can instead use: mlflow.set_tracking_uri("file:./mlruns")
-mlflow.set_tracking_uri(public_url)
+mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("tourist_customer_prediction_1212_experiments")
 
 DATASET_REPO_ID = "BujjiProjectPrep/Tourism-Customer-Prediction-1212"
